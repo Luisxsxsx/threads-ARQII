@@ -1,15 +1,3 @@
-/**
- * main_test.c
- * Programa de teste simplificado para o trabalho de Quick Sort Paralelo
- *
- * Este programa testa:
- * 1. Quick Sort sequencial vs paralelo
- * 2. Diferentes números de threads (1, 2, 4, 8)
- * 3. Diferentes tamanhos de array
- * 4. Integração com tokenização de texto
- * 5. Geração de resultados para análise
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -75,9 +63,6 @@ static char **generate_random_strings(int num_strings)
     return strings;
 }
 
-/**
- * Cria uma cópia de um array de strings
- */
 static char **copy_strings_array(char **original, int num_strings)
 {
     char **copy = malloc(num_strings * sizeof(char *));
@@ -99,9 +84,6 @@ static char **copy_strings_array(char **original, int num_strings)
     return copy;
 }
 
-/**
- * Libera array de strings
- */
 static void free_strings_array(char **strings, int num_strings)
 {
     if (!strings)
@@ -114,9 +96,6 @@ static void free_strings_array(char **strings, int num_strings)
     free(strings);
 }
 
-/**
- * Imprime primeiras N strings (para debug)
- */
 static void print_sample(char **strings, int num_strings, int n)
 {
     int count = (n < num_strings) ? n : num_strings;
@@ -128,21 +107,6 @@ static void print_sample(char **strings, int num_strings, int n)
         printf("  ... (%d elementos)\n", num_strings - n);
 }
 
-/* ============================================================
- * TESTE PRINCIPAL - PARA O TRABALHO
- * ============================================================ */
-
-/**
- * Teste centralizado que executa todas as validações necessárias
- * para o trabalho.
- *
- * O que é testado:
- * 1. Ordenação com diferentes tamanhos de array
- * 2. Ordenação com diferentes números de threads
- * 3. Comparação sequencial vs paralelo
- * 4. Integração com tokenização de texto
- * 5. Geração de resultados para análise
- */
 static void run_main_test()
 {
     printf("\n");
@@ -265,7 +229,7 @@ static void run_main_test()
         // Exibe resultados
         printf("  %3d      %.6f    %11lld  %7lld   %6.2fx  %s\n",
                num_th, avg_time, avg_comparisions, avg_swaps,
-               speedup, all_sorted ? "SIM ✓" : "NÃO ✗");
+               speedup, all_sorted ? "SIM " : "NÃO ");
     }
 
     // Libera array base
@@ -349,14 +313,10 @@ static void run_main_test()
 
         printf("  %7d   %.6f    %11lld  %7lld   %6.2fx  %s\n",
                size, avg_time, avg_comparisions, avg_swaps,
-               speedup, all_sorted ? "SIM ✓" : "NÃO ✗");
+               speedup, all_sorted ? "SIM" : "NÃO");
 
         free_strings_array(array, size);
     }
-
-    /* ================================================================
-     * TESTE 3: INTEGRAÇÃO COM TOKENIZAÇÃO DE TEXTO
-     * ================================================================ */
 
     printf("\n");
     printf("┌───────────────────────────────────────────────────────────┐\n");
@@ -420,7 +380,7 @@ static void run_main_test()
             printf("  Tempo de ordenação: %.6f segundos\n", elapsed);
             printf("  Comparações: %lld\n", result.comparisions);
             printf("  Trocas: %lld\n", result.swaps);
-            printf("  Ordenado: %s\n", sorted ? "SIM ✓" : "NÃO ✗");
+            printf("  Ordenado: %s\n", sorted ? "SIM " : "NÃO ");
 
             // Encontra palavras mais frequentes
             int freq_count;
@@ -451,26 +411,6 @@ static void run_main_test()
 
         destroy_words(words, num_words);
     }
-
-    /* ================================================================
-     * RESUMO FINAL
-     * ================================================================ */
-
-    printf("\n");
-    printf("╔═══════════════════════════════════════════════════════════╗\n");
-    printf("║                    RESUMO DOS TESTES                      ║\n");
-    printf("╚═══════════════════════════════════════════════════════════╝\n");
-    printf("\n");
-    printf("  ✅ Teste 1: Quick Sort com diferentes threads - OK\n");
-    printf("  ✅ Teste 2: Diferentes tamanhos de array - OK\n");
-    printf("  ✅ Teste 3: Integração com tokenização - OK\n");
-    printf("\n");
-    printf("  Os resultados mostram o speedup do paralelismo\n");
-    printf("  e a correta integração com o processamento de texto.\n");
-    printf("\n");
-    printf("  Dados para análise podem ser coletados a partir\n");
-    printf("  das tabelas exibidas acima.\n");
-    printf("\n");
 }
 
 /* ============================================================
@@ -482,7 +422,7 @@ int main(int argc, char **argv)
     printf("\n");
     printf("╔═══════════════════════════════════════════════════════════╗\n");
     printf("║     QUICK SORT PARALELO - TRABALHO ARQ II                 ║\n");
-    printf("║     Busca de Texto com Indexação                          ║\n");
+    printf("║     Ordenação de texto com quick-sort                     ║\n");
     printf("╚═══════════════════════════════════════════════════════════╝\n");
 
     // Inicializa seed para números aleatórios

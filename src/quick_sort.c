@@ -5,29 +5,13 @@
 #include <math.h>
 #include <sys/time.h>
 
-/* ============================================================
- * CONSTANTES INTERNAS
- * ============================================================ */
-
 #define DEFAULT_MAX_DEPTH 10        // Profundidade máxima padrão para threads
 #define DEFAULT_FALLBACK_LIMIT 1000 // Abaixo disso, usa sequencial
 #define MIN_PARALLEL_SIZE 10000     // Tamanho mínimo para usar paralelo
 
-/* ============================================================
- * VARIÁVEIS GLOBAIS (Configuração)
- * ============================================================ */
-
 static int global_max_depth = DEFAULT_MAX_DEPTH;
 static int global_fallback_limit = DEFAULT_FALLBACK_LIMIT;
 
-/* ============================================================
- * FUNÇÕES AUXILIARES INTERNAS (STATIC)
- * ============================================================ */
-
-/**
- * Troca duas strings em um array
- * Usada durante o particionamento
- */
 static void swap_strings(char **a, char **b)
 {
     char *temp = *a;
@@ -258,22 +242,6 @@ void sequential_quick_sort(char **words, int left, int right,
                           compare, comparisions, swaps);
 }
 
-/* ============================================================
- * QUICK SORT PARALELO (WORKER)
- * ============================================================ */
-
-/**
- * Função executada por cada thread
- * Esta é a função que será passada para pthread_create
- *
- * Como funciona o paralelismo:
- * 1. Cada thread recebe uma parte do array para ordenar
- * 2. Se a profundidade atual < profundidade máxima:
- *    - Cria duas novas threads para as metades (esquerda/direita)
- *    - Espera ambas terminarem (pthread_join)
- * 3. Se profundidade máxima atingida:
- *    - Usa versão sequencial (fallback)
- */
 void *quick_sort_worker(void *arg)
 {
     // Converte o argumento para o tipo correto
@@ -357,19 +325,6 @@ void *quick_sort_worker(void *arg)
     return NULL;
 }
 
-/* ============================================================
- * QUICK SORT PARALELO (WRAPPER)
- * ============================================================ */
-
-/**
- * Wrapper principal para Quick Sort paralelo
- *
- * Fluxo de execução:
- * 1. Verifica se o array deve ser ordenado em paralelo
- * 2. Se sim, cria a thread inicial e espera
- * 3. Coleta métricas (tempo, comparações, etc.)
- * 4. Retorna SortResult com todas as estatísticas
- */
 SortResult quick_sort_parallel(char **words, int num_words,
                                int num_threads,
                                int (*compare)(const char *, const char *))
@@ -448,14 +403,7 @@ SortResult quick_sort_parallel(char **words, int num_words,
     return result;
 }
 
-/* ============================================================
- * FUNÇÕES DE CONFIGURAÇÃO
- * ============================================================ */
 
-/**
- * Define a profundidade máxima de threads
- * Valores mais altos criam mais threads, mas aumentam overhead
- */
 void set_max_depth(int depth)
 {
     if (depth > 0 && depth < 20)
@@ -464,10 +412,6 @@ void set_max_depth(int depth)
     }
 }
 
-/**
- * Define o limite para fallback sequencial
- * Arrays menores que este valor usam versão sequencial
- */
 void set_fallback_limit(int min_size)
 {
     if (min_size > 0)
@@ -476,30 +420,16 @@ void set_fallback_limit(int min_size)
     }
 }
 
-/**
- * Retorna a profundidade máxima atual
- */
 int get_max_depth(void)
 {
     return global_max_depth;
 }
 
-/**
- * Retorna o limite de fallback atual
- */
 int get_fallback_limt(void)
 {
     return global_fallback_limit;
 }
 
-/* ============================================================
- * FUNÇÕES DE VALIDAÇÃO
- * ============================================================ */
-
-/**
- * Verifica se o array está ordenado corretamente
- * Útil para validação dos resultados
- */
 bool verify_sort(char **words, int num_words,
                  int (*compare)(const char *, const char *))
 {
@@ -523,11 +453,7 @@ bool verify_sort(char **words, int num_words,
     return true;
 }
 
-/**
- * Imprime estatísticas da ordenação de forma formatada
- * Útil para análise de desempenho
- */
-void print_sort_statitics(SortResult *result)
+void print_sort_stats(SortResult *result)
 {
     if (!result)
         return;

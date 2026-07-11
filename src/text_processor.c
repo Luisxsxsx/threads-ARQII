@@ -46,22 +46,6 @@ static bool is_separator(char c)
 }
 
 /**
- * Verifica se um caractere é um sinal de pontuação que deve ser removido
- * Usado quando a opção rm_punctuation está ativada
- */
-static bool is_punctuation(char c)
-{
-    return (c == '.' || c == ',' || c == ';' || c == ':' ||
-            c == '!' || c == '?' || c == '"' || c == '\'' ||
-            c == '(' || c == ')' || c == '[' || c == ']' ||
-            c == '{' || c == '}' || c == '-' || c == '_' ||
-            c == '/' || c == '\\' || c == '|' || c == '@' ||
-            c == '#' || c == '$' || c == '%' || c == '^' ||
-            c == '&' || c == '*' || c == '+' || c == '=' ||
-            c == '<' || c == '>' || c == '~' || c == '`');
-}
-
-/**
  * Adiciona uma posição à estrutura WordPosition
  * Realoca o array de posições se necessário (dobra a capacidade)
  */

@@ -4,38 +4,31 @@
 #include <pthread.h>
 #include "utils.h"
 
-/**
- * Estruturas de Dados
- */
-
 // Estrutura para dados passados para cada thread
 typedef struct
 {
-    char ***words;                              // Ponteiro para array de strings
-    int initial;                                // Índice inicial (inclusive)
-    int end;                                    // Índice final (inclusive)
-    int depth;                                  // Profundidade atual na recursão
-    int max_depth;                              // Profundidade máxima permitida
-    int (*compare)(const char *, const char *); // Função de comparação
-    long long *comparisions;                    // Contador de comparações (para métricas)
-    long long *swaps;                           // Contador de swaps (para métricas)
+    char ***words;                              
+    int initial;                                
+    int end;                                    
+    int depth;                                  
+    int max_depth;                              
+    int (*compare)(const char *, const char *); 
+    long long *comparisions;                    
+    long long *swaps;                           
 } QuickSortArgs;
 
 // Resultados da ordenação
 typedef struct
 {
-    double total_time;      // Tempo total de ordenação
-    long long comparisions; // Número de comparações realizadas
-    long long swaps;        // Número de swaps realizadas
+    double total_time;      
+    long long comparisions; 
+    long long swaps;        
     int max_depth;
-    int created_threads; // Número total de threads criadas
+    int created_threads; 
     double created_threads_time;
     double sync_time;
 } SortResult;
 
-/**
- * Funções de Ordenação
- */
 
 // Versão sequencial (fallback)
 void sequential_quick_sort(char **words,
@@ -111,6 +104,6 @@ bool verify_sort(char **words,
                  int (*compare)(const char *, const char *));
 
 // Imprime estatísticas da ordenação
-void print_sort_statitics(SortResult *resultado);
+void print_sort_stats(SortResult *resultado);
 
 #endif /* QUICK_SORT_H */
