@@ -6,21 +6,9 @@
 #include <wchar.h>
 #include <locale.h>
 
-/* ============================================================
- * CONSTANTES INTERNAS
- * ============================================================ */
-
 #define INITIAL_POSITION_CAPACITY 4 // Capacidade inicial para posições
 #define MAX_WORD_LENGTH 100         // Tamanho máximo de uma palavra
 
-/* ============================================================
- * FUNÇÕES AUXILIARES INTERNAS (STATIC)
- * ============================================================ */
-
-/**
- * Verifica se um caractere é um separador (espaço, pontuação, etc.)
- * Retorna true se for separador, false caso contrário
- */
 static bool is_separator(char c)
 {
     // Espaços e quebras de linha
@@ -45,10 +33,6 @@ static bool is_separator(char c)
     return false;
 }
 
-/**
- * Adiciona uma posição à estrutura WordPosition
- * Realoca o array de posições se necessário (dobra a capacidade)
- */
 static void add_position(WordPosition *wp, int position)
 {
     // Verifica se precisa aumentar a capacidade
@@ -74,11 +58,6 @@ static void add_position(WordPosition *wp, int position)
     wp->num_position++;
 }
 
-/**
- * Busca uma palavra no array de WordPosition
- * Retorna o índice se encontrar, -1 caso contrário
- * Usado para encontrar palavras já existentes durante a tokenização
- */
 static int find_word(WordPosition *words, int num_words, const char *word)
 {
     for (int i = 0; i < num_words; i++)
@@ -91,10 +70,7 @@ static int find_word(WordPosition *words, int num_words, const char *word)
     return -1;
 }
 
-/**
- * Comparação para qsort (usada para ordenar palavras)
- * Ordena alfabeticamente
- */
+
 static int compare_words(const void *a, const void *b)
 {
     WordPosition *w1 = (WordPosition *)a;
@@ -102,10 +78,7 @@ static int compare_words(const void *a, const void *b)
     return strcmp(w1->word, w2->word);
 }
 
-/**
- * Comparação para qsort por frequência (decrescente)
- * Usada para encontrar palavras mais frequentes
- */
+
 static int compare_by_frequency(const void *a, const void *b)
 {
     WordPosition *w1 = (WordPosition *)a;
@@ -114,10 +87,7 @@ static int compare_by_frequency(const void *a, const void *b)
     return (w2->num_position - w1->num_position);
 }
 
-/**
- * Remove acentos básicos de uma palavra (português simplificado)
- * Substitui caractéres acentuados por seus equivalentes sem acento
- */
+
 static void remove_accents(char *word)
 {
     // Tabela de substituição para caracteres acentuados comuns
@@ -156,10 +126,6 @@ static void remove_accents(char *word)
     }
 }
 
-/**
- * Remove sinais de pontuação de uma palavra
- * Mantém apenas letras e números
- */
 static void remove_punctuation_from_word(char *word)
 {
     char temp[MAX_WORD_LENGTH];
@@ -177,21 +143,6 @@ static void remove_punctuation_from_word(char *word)
     strcpy(word, temp);
 }
 
-/* ============================================================
- * FUNÇÕES PÚBLICAS - IMPLEMENTAÇÃO
- * ============================================================ */
-
-/**
- * Tokeniza um texto, dividindo em palavras e armazenando posições
- *
- * Parâmetros:
- *   - text: texto a ser tokenizado (não modifica)
- *   - num_words: ponteiro para armazenar o número de palavras
- *   - options: opções de tokenização (pode ser NULL para padrão)
- *
- * Retorna: array de WordPosition alocado dinamicamente
- *          ou NULL em caso de erro
- */
 WordPosition *tokenize_txt(const char *text, int *num_words, TokenizationOpt *options)
 {
     // Validação dos parâmetros
@@ -348,19 +299,11 @@ WordPosition *tokenize_txt(const char *text, int *num_words, TokenizationOpt *op
     return words;
 }
 
-/**
- * Versão simplificada da tokenização
- * Usa opções padrão (ignora maiúsculas, remove pontuação)
- */
 WordPosition *tokenize_txt_simple(const char *text, int *num_words)
 {
     return tokenize_txt(text, num_words, NULL);
 }
 
-/**
- * Normaliza um texto completo
- * Converte para minúsculas e remove acentos
- */
 void normalize_txt(char *text)
 {
     if (!text)
@@ -397,10 +340,6 @@ void normalize_txt(char *text)
     }
 }
 
-/**
- * Normaliza uma única palavra
- * Converte para minúsculas e remove acentos
- */
 void normalize_word(char *palavra)
 {
     if (!palavra)
@@ -409,16 +348,6 @@ void normalize_word(char *palavra)
     remove_accents(palavra);
 }
 
-/**
- * Remove palavras duplicadas do array e conta frequências
- *
- * Parâmetros:
- *   - words: array de WordPosition (DEVE estar ordenado)
- *   - num_words: número de palavras no array
- *   - result: ponteiro para receber o novo array (sem duplicatas)
- *
- * Retorna: número de palavras únicas
- */
 int rm_duplicate(WordPosition *words, int num_words, WordPosition **result)
 {
     if (!words || num_words == 0 || !result)
@@ -485,10 +414,6 @@ int rm_duplicate(WordPosition *words, int num_words, WordPosition **result)
     return unique_count;
 }
 
-/**
- * Filtra stopwords de um array de palavras
- * Remove palavras que estão na lista de stopwords
- */
 int filter_stopwords(WordPosition *words, int num_words,
                      const char **stopwords, int num_stopwords,
                      WordPosition **result)
@@ -533,36 +458,6 @@ int filter_stopwords(WordPosition *words, int num_words,
     return filtered_count;
 }
 
-/**
- * Retorna lista de stopwords em português
- * Palavras comuns que geralmente não são úteis para busca
- */
-const char **get_stopwords_portugues(int *num_stopwords)
-{
-    // Lista estática de stopwords em português
-    static const char *stopwords[] = {
-        "a", "ao", "aos", "aquela", "aquelas", "aquele", "aqueles", "aquilo",
-        "as", "até", "com", "como", "da", "das", "de", "dela", "delas", "dele",
-        "deles", "depois", "do", "dos", "e", "ela", "elas", "ele", "eles",
-        "em", "entre", "era", "eram", "essa", "essas", "esse", "esses",
-        "esta", "estas", "este", "estes", "eu", "foi", "foram", "for",
-        "fosse", "há", "isso", "isto", "já", "lhe", "lhes", "mais",
-        "mas", "me", "mesmo", "meu", "meus", "minha", "minhas", "muito",
-        "na", "nas", "nem", "no", "nos", "nossa", "nossas", "nosso",
-        "nossos", "num", "numa", "não", "nós", "o", "os", "ou", "para",
-        "pela", "pelas", "pelo", "pelos", "por", "porque", "que", "quando",
-        "quem", "se", "sem", "ser", "sua", "suas", "seu", "seus", "são",
-        "também", "te", "tem", "temos", "tenha", "ter", "teu", "teus",
-        "ti", "tua", "tuas", "tudo", "um", "uma", "umas", "uns", "você",
-        "vocês", "vós", "à", "às", "é", "ela", "ele", "eles", "elas"};
-
-    *num_stopwords = sizeof(stopwords) / sizeof(stopwords[0]);
-    return stopwords;
-}
-
-/**
- * Calcula estatísticas do texto processado
- */
 TxtStatistic calc_statistics(const char *text, WordPosition *words, int num_words)
 {
     TxtStatistic stats = {0};
@@ -606,10 +501,6 @@ TxtStatistic calc_statistics(const char *text, WordPosition *words, int num_word
     return stats;
 }
 
-/**
- * Encontra as palavras mais frequentes no texto
- * Retorna um array com as top_n palavras mais frequentes
- */
 WordPosition *find_frequent(WordPosition *words, int num_words,
                             int top_n, int *result_count)
 {
@@ -688,10 +579,6 @@ WordPosition *find_frequent(WordPosition *words, int num_words,
     return result;
 }
 
-/**
- * Libera toda a estrutura WordPosition
- * Libera a palavra, as posições e a estrutura em si
- */
 void destroy_words(WordPosition *words, int num_words)
 {
     if (!words)
@@ -718,25 +605,4 @@ void destroy_words(WordPosition *words, int num_words)
     }
 
     free(words);
-}
-
-/**
- * Libera as opções de tokenização
- * Libera a lista de stopwords se foi alocada dinamicamente
- */
-void destroy_token_options(TokenizationOpt *options)
-{
-    if (!options)
-        return;
-
-    // Se a lista de stopwords foi alocada dinamicamente
-    // Nota: A lista padrão é estática, não deve ser liberada
-    if (options->stopwords_list)
-    {
-        // Assumimos que foi alocada com malloc
-        // O usuário deve ser responsável por gerenciar isso
-        // Esta é uma decisão de design: deixamos o usuário gerenciar
-        options->stopwords_list = NULL;
-        options->num_stopwords = 0;
-    }
 }

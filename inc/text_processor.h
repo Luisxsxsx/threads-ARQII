@@ -78,9 +78,6 @@ int filter_stopwords(WordPosition *words,
                      int num_stopwords,
                      WordPosition **resultado);
 
-// Lista de stopwords padrão (português)
-const char **get_stopwords_portugues(int *num_stopwords);
-
 /**
  * Análise e Estatísticas
  */
@@ -102,8 +99,5 @@ WordPosition *find_frequent(WordPosition *words,
 
 // Libera toda a estrutura WordPosition
 void destroy_words(WordPosition *words, int num_words);
-
-// Libera opções de tokenização
-void destroy_token_options(TokenizationOpt *options);
 
 #endif /* TEXT_PROCESSOR_H */
