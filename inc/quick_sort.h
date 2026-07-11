@@ -74,36 +74,17 @@ int partition_hoare(char **words,
 // Comparação padrão para strings
 int compare_strings(const char *a, const char *b);
 
-// Comparação ignorando maiúsculas/minúsculas
-int compare_strings_ignore_case(const char *a, const char *b);
-
-// Comparação por tamanho (para ordenação por comprimento)
-int compare_by_size(const char *a, const char *b);
-
-/**
- * Configuração e Controle
- */
-
-// Define profundidade máxima de threads
 void set_max_depth(int depth);
-
-// Define o limite para fallback sequencial
 void set_fallback_limit(int min_size);
 
-// Obtém configurações atuais
+
 int get_max_depth(void);
 int get_fallback_limt(void);
 
-/**
- * Validação
- */
-
-// Verifica se array está ordenado
 bool verify_sort(char **words,
                  int num_words,
                  int (*compare)(const char *, const char *));
 
-// Imprime estatísticas da ordenação
 void print_sort_stats(SortResult *resultado);
 
 #endif /* QUICK_SORT_H */

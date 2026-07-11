@@ -5,9 +5,9 @@
 #include <math.h>
 #include <sys/time.h>
 
-#define DEFAULT_MAX_DEPTH 10        // Profundidade máxima padrão para threads
-#define DEFAULT_FALLBACK_LIMIT 1000 // Abaixo disso, usa sequencial
-#define MIN_PARALLEL_SIZE 10000     // Tamanho mínimo para usar paralelo
+#define DEFAULT_MAX_DEPTH 10
+#define DEFAULT_FALLBACK_LIMIT 1000
+#define MIN_PARALLEL_SIZE 10000
 
 static int global_max_depth = DEFAULT_MAX_DEPTH;
 static int global_fallback_limit = DEFAULT_FALLBACK_LIMIT;
@@ -19,10 +19,6 @@ static void swap_strings(char **a, char **b)
     *b = temp;
 }
 
-/**
- * Calcula a profundidade máxima baseada no número de threads
- * Isso garante aproximadamente num_threads threads
- */
 static int calculate_max_depth(int num_threads)
 {
     if (num_threads <= 1)
@@ -30,23 +26,13 @@ static int calculate_max_depth(int num_threads)
     return (int)(log2(num_threads)) + 1;
 }
 
-/**
- * Verifica se deve usar paralelo ou sequencial
- * Baseado no tamanho do array e configurações
- */
+
 static bool should_use_parallel(int size, int num_threads)
 {
     return (size > MIN_PARALLEL_SIZE && num_threads > 1);
 }
 
-/* ============================================================
- * FUNÇÕES DE COMPARAÇÃO (Públicas)
- * ============================================================ */
 
-/**
- * Comparação padrão para strings (strcmp)
- * Retorna: 0 se iguais, negativo se a < b, positivo se a > b
- */
 int compare_strings(const char *a, const char *b)
 {
     if (!a && !b)
@@ -58,59 +44,6 @@ int compare_strings(const char *a, const char *b)
     return strcmp(a, b);
 }
 
-/**
- * Comparação ignorando maiúsculas/minúsculas
- * Útil para busca case-insensitive
- */
-int compare_strings_ignore_case(const char *a, const char *b)
-{
-    if (!a && !b)
-        return 0;
-    if (!a)
-        return -1;
-    if (!b)
-        return 1;
-    return compare_ignore_case(a, b); // Função de utils.h
-}
-
-/**
- * Comparação por tamanho da string
- * Útil para ordenar palavras por comprimento
- */
-int compare_by_size(const char *a, const char *b)
-{
-    if (!a && !b)
-        return 0;
-    if (!a)
-        return -1;
-    if (!b)
-        return 1;
-
-    size_t len_a = strlen(a);
-    size_t len_b = strlen(b);
-
-    if (len_a < len_b)
-        return -1;
-    if (len_a > len_b)
-        return 1;
-    return strcmp(a, b); // Se mesmo tamanho, ordem alfabética
-}
-
-/* ============================================================
- * FUNÇÕES DE PARTICIONAMENTO
- * ============================================================ */
-
-/**
- * Particionamento Lomuto para strings
- *
- * Como funciona:
- * 1. Escolhe o último elemento como pivô
- * 2. Percorre o array da esquerda para a direita
- * 3. Mantém uma região de elementos menores que o pivô
- * 4. No final, coloca o pivô na posição correta
- *
- * Retorna: posição final do pivô
- */
 int partition_strings(char **words, int left, int right,
                       int (*compare)(const char *, const char *),
                       long long *comparisions, long long *swaps)
@@ -150,18 +83,6 @@ int partition_strings(char **words, int left, int right,
     return i + 1; // Retorna posição do pivô
 }
 
-/**
- * Particionamento Hoare (alternativo ao Lomuto)
- *
- * Como funciona:
- * 1. Escolhe o elemento do meio como pivô
- * 2. Dois ponteiros: um da esquerda, um da direita
- * 3. Move o ponteiro esquerdo até encontrar elemento >= pivô
- * 4. Move o ponteiro direito até encontrar elemento <= pivô
- * 5. Troca os elementos e continua
- *
- * Vantagem: Geralmente faz menos trocas que Lomuto
- */
 int partition_hoare(char **words, int left, int right,
                     int (*compare)(const char *, const char *),
                     long long *comparisions, long long *swaps)
@@ -205,17 +126,6 @@ int partition_hoare(char **words, int left, int right,
     }
 }
 
-/* ============================================================
- * QUICK SORT SEQUENCIAL (FALLBACK)
- * ============================================================ */
-
-/**
- * Versão sequencial do Quick Sort
- * Usada como fallback quando:
- * - Array é pequeno (abaixo do limite)
- * - Profundidade máxima foi atingida
- * - Número de threads = 1
- */
 void sequential_quick_sort(char **words, int left, int right,
                            int (*compare)(const char *, const char *),
                            long long *comparisions, long long *swaps)
@@ -304,8 +214,6 @@ void *quick_sort_worker(void *arg)
         pthread_t left_thread, right_thread;
 
         // Cria threads para ambas as metades
-        // Nota: Usamos o mesmo ponteiro words_ptr em ambas
-        // Isso é seguro porque as threads trabalham em partes diferentes do array
         pthread_create(&left_thread, NULL, quick_sort_worker, &left_args);
         pthread_create(&right_thread, NULL, quick_sort_worker, &right_args);
 
@@ -402,7 +310,6 @@ SortResult quick_sort_parallel(char **words, int num_words,
 
     return result;
 }
-
 
 void set_max_depth(int depth)
 {
