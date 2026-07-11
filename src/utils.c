@@ -5,22 +5,9 @@
 #include <time.h>
 #include <stdarg.h>
 
-/* ============================================================
- * CONSTANTES INTERNAS
- * ============================================================ */
-
 #define MAX_LOG_MESSAGE 1024 // Tamanho máximo para mensagens de log
 #define LOG_TIME_BUFFER 64   // Tamanho do buffer para timestamp
 
-/* ============================================================
- * FUNÇÕES AUXILIARES INTERNAS (STATIC)
- * ============================================================ */
-
-/**
- * Obtém timestamp atual formatado para logs
- * Retorna uma string com data e hora no formato: "YYYY-MM-DD HH:MM:SS"
- * Usa buffer estático, não thread-safe (mas suficiente para nosso uso)
- */
 static const char *get_timestamp(void)
 {
     static char buffer[LOG_TIME_BUFFER];
@@ -34,23 +21,7 @@ static const char *get_timestamp(void)
     return buffer;
 }
 
-/* ============================================================
- * GERENCIAMENTO DE MEMÓRIA
- * ============================================================ */
 
-/**
- * Aloca um array de strings com tamanho fixo para cada string
- *
- * Parâmetros:
- *   - num_strings: número de strings a alocar
- *   - max_length: tamanho máximo de cada string (incluindo '\0')
- *
- * Retorna: ponteiro para array de strings, ou NULL em caso de erro
- *
- * Exemplo de uso:
- *   char** words = allocate_array_strings(100, 50);
- *   // Cria 100 strings, cada uma com capacidade para 50 caracteres
- */
 char **allocate_array_strings(int num_strings, int max_length)
 {
     // Verifica parâmetros
@@ -90,13 +61,6 @@ char **allocate_array_strings(int num_strings, int max_length)
     return array;
 }
 
-/**
- * Libera um array de strings alocado com allocate_array_strings
- *
- * Parâmetros:
- *   - array: array de strings a ser liberado
- *   - num_strings: número de strings no array
- */
 void free_array_strings(char **array, int num_strings)
 {
     if (!array)
@@ -116,16 +80,6 @@ void free_array_strings(char **array, int num_strings)
     free(array);
 }
 
-/**
- * Cria uma cópia de uma string (equivalente a strdup)
- *
- * Parâmetros:
- *   - origem: string a ser copiada
- *
- * Retorna: nova string alocada dinamicamente, ou NULL em caso de erro
- *
- * Nota: O caller é responsável por liberar a memória com free()
- */
 char *cp_string(const char *origem)
 {
     if (!origem)
@@ -150,18 +104,6 @@ char *cp_string(const char *origem)
     return copia;
 }
 
-/* ============================================================
- * MANIPULAÇÃO DE STRINGS
- * ============================================================ */
-
-/**
- * Converte todos os caracteres de uma string para minúsculas
- *
- * Parâmetros:
- *   - str: string a ser convertida (modifica in-place)
- *
- * Exemplo: "Hello World" → "hello world"
- */
 void to_lowercase(char *str)
 {
     if (!str)
@@ -173,14 +115,6 @@ void to_lowercase(char *str)
     }
 }
 
-/**
- * Remove todos os espaços em branco de uma string
- *
- * Parâmetros:
- *   - str: string a ser processada (modifica in-place)
- *
- * Exemplo: "Hello World" → "HelloWorld"
- */
 void rm_spaces(char *str)
 {
     if (!str)
@@ -198,17 +132,6 @@ void rm_spaces(char *str)
     str[j] = '\0'; // Finaliza a string
 }
 
-/**
- * Compara duas strings ignorando diferenças entre maiúsculas/minúsculas
- *
- * Parâmetros:
- *   - a: primeira string
- *   - b: segunda string
- *
- * Retorna: 0 se iguais, negativo se a < b, positivo se a > b
- *
- * Exemplo: compare_ignore_case("Hello", "hello") → 0
- */
 int compare_ignore_case(const char *a, const char *b)
 {
     if (!a && !b)
@@ -242,16 +165,6 @@ int compare_ignore_case(const char *a, const char *b)
     return result;
 }
 
-/**
- * Remove espaços em branco do início e fim de uma string
- *
- * Parâmetros:
- *   - str: string a ser processada (modifica in-place)
- *
- * Retorna: ponteiro para a string processada (mesmo ponteiro)
- *
- * Exemplo: "  Hello World  " → "Hello World"
- */
 char *trim_string(char *str)
 {
     if (!str)
@@ -291,24 +204,6 @@ char *trim_string(char *str)
     return str;
 }
 
-/* ============================================================
- * VALIDAÇÃO E LOGGING
- * ============================================================ */
-
-/**
- * Verifica se um ponteiro é válido (não NULL) e registra mensagem
- *
- * Parâmetros:
- *   - ptr: ponteiro a ser verificado
- *   - mensagem: mensagem a ser registrada se ptr for NULL
- *
- * Retorna: true se ptr não for NULL, false caso contrário
- *
- * Uso típico:
- *   if (!verify_mem(ptr, "Falha ao alocar memória para dados")) {
- *       return NULL;
- *   }
- */
 bool verify_mem(void *ptr, const char *mensagem)
 {
     if (!ptr)
@@ -319,16 +214,6 @@ bool verify_mem(void *ptr, const char *mensagem)
     return true;
 }
 
-/**
- * Registra uma mensagem de log com timestamp e nível
- *
- * Parâmetros:
- *   - nivel: nível da mensagem ("INFO", "WARN", "ERROR", "DEBUG")
- *   - mensagem: mensagem a ser registrada
- *   - ...: argumentos adicionais (formato printf)
- *
- * Exemplo: log_message("INFO", "Processando arquivo %s", filename);
- */
 void log_message(const char *nivel, const char *mensagem, ...)
 {
     if (!nivel || !mensagem)
@@ -351,15 +236,6 @@ void log_message(const char *nivel, const char *mensagem, ...)
     fflush(stderr); // Garante que a mensagem seja escrita imediatamente
 }
 
-/**
- * Registra tempo de execução de uma operação
- *
- * Parâmetros:
- *   - operacao: nome da operação
- *   - tempo: tempo em segundos
- *
- * Exemplo: log_time("Ordenação", 2.345);
- */
 void log_time(const char *operacao, double tempo)
 {
     if (!operacao)
@@ -371,19 +247,6 @@ void log_time(const char *operacao, double tempo)
     fflush(stderr);
 }
 
-/* ============================================================
- * UTILITÁRIOS DE ARRAY
- * ============================================================ */
-
-/**
- * Encontra o valor máximo em um array de inteiros
- *
- * Parâmetros:
- *   - array: array de inteiros
- *   - tamanho: número de elementos no array
- *
- * Retorna: valor máximo encontrado, ou 0 se array for NULL ou vazio
- */
 int find_max(int *array, int tamanho)
 {
     if (!array || tamanho <= 0)
@@ -403,15 +266,6 @@ int find_max(int *array, int tamanho)
     return max;
 }
 
-/**
- * Encontra o valor mínimo em um array de inteiros
- *
- * Parâmetros:
- *   - array: array de inteiros
- *   - tamanho: número de elementos no array
- *
- * Retorna: valor mínimo encontrado, ou 0 se array for NULL ou vazio
- */
 int find_min(int *array, int tamanho)
 {
     if (!array || tamanho <= 0)
@@ -431,15 +285,6 @@ int find_min(int *array, int tamanho)
     return min;
 }
 
-/**
- * Calcula a média de um array de inteiros
- *
- * Parâmetros:
- *   - array: array de inteiros
- *   - tamanho: número de elementos no array
- *
- * Retorna: média como double, ou 0.0 se array for NULL ou vazio
- */
 double calc_med(int *array, int tamanho)
 {
     if (!array || tamanho <= 0)
@@ -457,22 +302,6 @@ double calc_med(int *array, int tamanho)
     return (double)soma / tamanho;
 }
 
-/**
- * Imprime um array de strings de forma formatada
- * Útil para debug e visualização
- *
- * Parâmetros:
- *   - array: array de strings
- *   - tamanho: número de strings no array
- *   - limite: número máximo de strings a imprimir (-1 para imprimir todas)
- *
- * Exemplo de saída:
- *   Array de strings (5 de 10 mostradas):
- *   [0] "hello"
- *   [1] "world"
- *   [2] "test"
- *   ...
- */
 void print_array_strings(char **array, int tamanho, int limite)
 {
     if (!array || tamanho <= 0)
@@ -505,49 +334,4 @@ void print_array_strings(char **array, int tamanho, int limite)
     }
 
     fflush(stdout);
-}
-
-/* ============================================================
- * FUNÇÕES UTILITÁRIAS ADICIONAIS
- * ============================================================ */
-
-/**
- * Converte um double para string com precisão controlada
- * Útil para formatação de saída
- *
- * Parâmetros:
- *   - valor: valor a ser convertido
- *   - precisao: número de casas decimais
- *   - buffer: buffer para armazenar a string
- *   - buffer_size: tamanho do buffer
- */
-void double_to_string(double valor, int precisao, char *buffer, int buffer_size)
-{
-    if (!buffer || buffer_size <= 0)
-        return;
-
-    snprintf(buffer, buffer_size, "%.*f", precisao, valor);
-}
-
-/**
- * Verifica se uma string contém apenas caracteres alfanuméricos
- *
- * Parâmetros:
- *   - str: string a ser verificada
- *
- * Retorna: true se a string for alfanumérica, false caso contrário
- */
-bool is_alphanumeric(const char *str)
-{
-    if (!str || strlen(str) == 0)
-        return false;
-
-    for (int i = 0; str[i] != '\0'; i++)
-    {
-        if (!isalnum(str[i]))
-        {
-            return false;
-        }
-    }
-    return true;
 }
